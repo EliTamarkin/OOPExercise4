@@ -3,12 +3,14 @@ package ascii_art.img_to_char;
 import image.Image;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
 public class BrightnessImgCharMatcher {
 
-    private static final int PIXEL_RESOLUTION = 4;
+    private static final int PIXEL_RESOLUTION = 16;
 
     private static final int MAX_RGB = 255;
     private final Image image;
@@ -27,7 +29,16 @@ public class BrightnessImgCharMatcher {
             calculateSingleCharBrightness(character);
         }
         linearStretchCharBrightness();
-        Color[][]
+        int subImageSize = image.getWidth() / numCharsInRow;
+        int numCharsInCol = image.getHeight() / numCharsInRow;
+        image.iterator(subImageSize);
+        char[][] fittedChars = new char[numCharsInCol][numCharsInRow];
+        for (int i = 0; i < numCharsInCol; i++) {
+            for (int j = 0; j < numCharsInRow; j++) {
+                fittedChars[i][j] = getCharacterForSubImage(subImages.get(i).get(j));
+            }
+        }
+        return fittedChars;
     }
 
     private void calculateSingleCharBrightness(char charToCheck){
@@ -71,15 +82,24 @@ public class BrightnessImgCharMatcher {
         return getMostFittedCharacter(greyValuesAverage);
     }
 
-    private char getMostFittedCharacter(double averageValue){
+    private char getMostFittedCharacter(float valueToFit){
         float smallestDifference = Float.POSITIVE_INFINITY;
         char mostFittedChar = 0;
         for (char key : characterBrightnessValues.keySet()){
-            if (Math.abs(characterBrightnessValues.get(key) - averageValue) < smallestDifference){
+            float currentDifference = Math.abs(characterBrightnessValues.get(key) - valueToFit);
+            if (currentDifference < smallestDifference){
+                smallestDifference = currentDifference;
                 mostFittedChar = key;
             }
         }
         return mostFittedChar;
+    }
+
+    public static void main(String[] args) {
+        Image img = Image.fromFile("./board.jpeg");
+        BrightnessImgCharMatcher charMatcher = new BrightnessImgCharMatcher(img, "Ariel");
+        var chars = charMatcher.chooseChars(2, new Character[]{'m', 'o'});
+        System.out.println(Arrays.deepToString(chars));
     }
 
 

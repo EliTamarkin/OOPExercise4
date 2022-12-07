@@ -2,15 +2,20 @@ package image;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Facade for the image module and an interface representing an image.
  * @author Dan Nirel
  */
-public interface Image {
+public interface Image extends Iterable<Color[][]>{
     Color getPixel(int x, int y);
     int getWidth();
     int getHeight();
+    default Iterator<Color[][]> iterator() {
+        return new SubImages(new ArrayList<>()).iterator();
+    }
 
     /**
      * Open an image from file. Each dimensions of the returned image is guaranteed
