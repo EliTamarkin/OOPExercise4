@@ -85,7 +85,8 @@ class FileImage implements Image {
         return pixelArray[x][y];
     }
 
-    private void setSubImages(int subImageSize){
+    @Override
+    public SubImages getSubImages(int subImageSize) {
         this.subImages = new ArrayList<>();
         int rowSplit = pixelArray.length / subImageSize;
         int colSplit = pixelArray[0].length / subImageSize;
@@ -102,10 +103,7 @@ class FileImage implements Image {
             }
             subImages.add(rowSubImages);
         }
+        return new SubImages(this.subImages);
     }
 
-    @Override
-    public Iterator<Color[][]> iterator() {
-        return new SubImages(this.subImages).iterator();
-    }
 }

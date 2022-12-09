@@ -7,8 +7,8 @@ import image.Image;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-//public class Driver {
-//    public static void main(String[] args) throws Exception {
+public class Driver {
+    public static void main(String[] args) throws Exception {
 //        if (args.length != 1) {
 //            System.err.println("USAGE: java asciiArt ");
 //            return;
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 //            Logger.getGlobal().severe("Failed to open image file " + args[0]);
 //            return;
 //        }
-//        new Shell(img).run();
-//    }
-//}
+        Image img = Image.fromFile("./board.jpeg");
+        new Shell(img).run();
+    }
+}

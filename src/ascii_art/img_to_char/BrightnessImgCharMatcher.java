@@ -1,18 +1,20 @@
 package ascii_art.img_to_char;
 
 import image.Image;
+import image.SubImages;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 public class BrightnessImgCharMatcher {
 
     private static final int PIXEL_RESOLUTION = 16;
-
     private static final int MAX_RGB = 255;
+    private static final double RED_FOR_GREY_FACTOR = 0.2126;
+    private static final double GREEN_FOR_GREY_FACTOR = 0.7152;
+    private static final double BLUE_FOR_GREY_FACTOR = 0.0722;
+    private static final String ERROR_BAD_IMAGE = "ERROR: BAD iMAGE";
+
     private final Image image;
     private final String fontName;
 
@@ -20,6 +22,9 @@ public class BrightnessImgCharMatcher {
 
     public BrightnessImgCharMatcher(Image image, String fontName){
         this.image = image;
+        if (image == null){
+            System.out.println(ERROR_BAD_IMAGE);
+        }
         this.fontName = fontName;
         this.characterBrightnessValues = new HashMap<>();
     }
@@ -30,12 +35,16 @@ public class BrightnessImgCharMatcher {
         }
         linearStretchCharBrightness();
         int subImageSize = image.getWidth() / numCharsInRow;
-        int numCharsInCol = image.getHeight() / numCharsInRow;
-        image.iterator(subImageSize);
+        int numCharsInCol = image.getHeight() / subImageSize;
+        SubImages subImages = image.getSubImages(subImageSize);
         char[][] fittedChars = new char[numCharsInCol][numCharsInRow];
-        for (int i = 0; i < numCharsInCol; i++) {
-            for (int j = 0; j < numCharsInRow; j++) {
-                fittedChars[i][j] = getCharacterForSubImage(subImages.get(i).get(j));
+        int i = 0, j = 0;
+        for(Color[][] subImage : subImages){
+            fittedChars[i][j] = getCharacterForSubImage(subImage);
+            j++;
+            if (j == numCharsInRow) {
+                j = 0;
+                i++;
             }
         }
         return fittedChars;
@@ -74,8 +83,9 @@ public class BrightnessImgCharMatcher {
         float greyValuesAverage = 0;
         for (Color[] rowColors : subImage) {
             for (Color color : rowColors) {
-                greyValuesAverage += color.getRed() * 0.2126 + color.getGreen() * 0.7152 +
-                        color.getBlue() * 0.0722;
+                greyValuesAverage += color.getRed() * RED_FOR_GREY_FACTOR +
+                        color.getGreen() * GREEN_FOR_GREY_FACTOR +
+                        color.getBlue() * BLUE_FOR_GREY_FACTOR;
             }
         }
         greyValuesAverage = greyValuesAverage / (MAX_RGB * subImage.length * subImage[0].length);

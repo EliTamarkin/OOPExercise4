@@ -9,12 +9,15 @@ import java.util.Iterator;
  * Facade for the image module and an interface representing an image.
  * @author Dan Nirel
  */
-public interface Image extends Iterable<Color[][]>{
+public interface Image{
     Color getPixel(int x, int y);
     int getWidth();
     int getHeight();
-    default Iterator<Color[][]> iterator() {
-        return new SubImages(new ArrayList<>()).iterator();
+    default SubImages getSubImages(int subImageSize) {
+        ArrayList<Color[][]> innerList = new ArrayList<>();
+        ArrayList<ArrayList<Color[][]>> outerList = new ArrayList<>();
+        outerList.add(innerList);
+        return new SubImages(outerList);
     }
 
     /**
@@ -40,4 +43,5 @@ public interface Image extends Iterable<Color[][]>{
         return new ImageIterableProperty<>(
                 this, this::getPixel);
     }
+
 }
