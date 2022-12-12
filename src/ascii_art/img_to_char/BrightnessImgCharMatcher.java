@@ -33,7 +33,6 @@ public class BrightnessImgCharMatcher {
         for(char character : charSet){
             calculateSingleCharBrightness(character);
         }
-        linearStretchCharBrightness();
         int subImageSize = image.getWidth() / numCharsInRow;
         int numCharsInCol = image.getHeight() / subImageSize;
         SubImages subImages = image.getSubImages(subImageSize);
@@ -51,6 +50,9 @@ public class BrightnessImgCharMatcher {
     }
 
     private void calculateSingleCharBrightness(char charToCheck){
+        if (characterBrightnessValues.containsKey(charToCheck)){
+            return;
+        }
         boolean[][] brightnessArray = CharRenderer.getImg(charToCheck, PIXEL_RESOLUTION, fontName);
         float charBrightness = (float) getNumberOfWhitePixels(brightnessArray) /
                 (PIXEL_RESOLUTION * PIXEL_RESOLUTION);
@@ -69,14 +71,9 @@ public class BrightnessImgCharMatcher {
         return counter;
     }
 
-    private void linearStretchCharBrightness(){
-        float minValue = Collections.min(characterBrightnessValues.values());
-        float maxValue = Collections.max(characterBrightnessValues.values());
-        for(char key : characterBrightnessValues.keySet()){
-            float currentValue = characterBrightnessValues.get(key);
-            float updatedValue = (currentValue - minValue) / (maxValue - minValue);
-            characterBrightnessValues.put(key, updatedValue);
-        }
+    private float linearStretchCharBrightness(char key, float minValue, float maxValue){
+        float currentValue = characterBrightnessValues.get(key);
+        return (currentValue - minValue) / (maxValue - minValue);
     }
 
     private Character getCharacterForSubImage(Color[][] subImage){
@@ -93,10 +90,13 @@ public class BrightnessImgCharMatcher {
     }
 
     private char getMostFittedCharacter(float valueToFit){
+        float minValue = Collections.min(characterBrightnessValues.values());
+        float maxValue = Collections.max(characterBrightnessValues.values());
         float smallestDifference = Float.POSITIVE_INFINITY;
         char mostFittedChar = 0;
         for (char key : characterBrightnessValues.keySet()){
-            float currentDifference = Math.abs(characterBrightnessValues.get(key) - valueToFit);
+            float linearStretchedValue = linearStretchCharBrightness(key, minValue, maxValue);
+            float currentDifference = Math.abs(linearStretchedValue - valueToFit);
             if (currentDifference < smallestDifference){
                 smallestDifference = currentDifference;
                 mostFittedChar = key;

@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A package-private class of the package image.
@@ -16,8 +15,6 @@ class FileImage implements Image {
     private static final Color DEFAULT_COLOR = Color.WHITE;
 
     private final Color[][] pixelArray;
-
-    private ArrayList<ArrayList<Color[][]>> subImages;
 
     public FileImage(String filename) throws IOException {
         java.awt.image.BufferedImage im = ImageIO.read(new File(filename));
@@ -65,7 +62,7 @@ class FileImage implements Image {
     private void fillImage(Color[][] pixelArray, int rowPadAmount, int colPadAmount, BufferedImage im){
         for (int row = 0; row < im.getHeight(); row++) {
             for (int col = 0; col < im.getWidth(); col++) {
-                    pixelArray[row + rowPadAmount][col + colPadAmount] = new Color(im.getRGB(row, col));
+                    pixelArray[row + rowPadAmount][col + colPadAmount] = new Color(im.getRGB(col, row));
             }
         }
     }
@@ -82,12 +79,12 @@ class FileImage implements Image {
 
     @Override
     public Color getPixel(int x, int y) {
-        return pixelArray[x][y];
+        return pixelArray[y][x];
     }
 
     @Override
     public SubImages getSubImages(int subImageSize) {
-        this.subImages = new ArrayList<>();
+        ArrayList<ArrayList<Color[][]>> subImages = new ArrayList<>();
         int rowSplit = pixelArray.length / subImageSize;
         int colSplit = pixelArray[0].length / subImageSize;
         for (int i = 0; i < rowSplit; i++) {
@@ -103,7 +100,7 @@ class FileImage implements Image {
             }
             subImages.add(rowSubImages);
         }
-        return new SubImages(this.subImages);
+        return new SubImages(subImages);
     }
 
 }

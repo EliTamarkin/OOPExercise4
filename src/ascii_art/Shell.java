@@ -27,10 +27,13 @@ class Shell {
 
     // print chars constants
     private static final String CHARS_COMMAND = "chars";
+    private static final String PRINT_CHARS_DELIMITER = " ";
 
     // add and remove chars constants
     private static final String ADD_COMMAND = "add";
     private static final String REMOVE_COMMAND = "remove";
+    private static final String BAD_ADD_MESSAGE = "Did not add due to incorrect format";
+    private static final String BAD_REMOVE_MESSAGE = "Did not remove due to incorrect format";
     private static final String ALL = "all";
     private static final char MIN_CHAR = ' ';
     private static final char MAX_CHAR = '~';
@@ -100,8 +103,10 @@ class Shell {
                     handlePrintChars(userInputWords);
                     break;
                 case ADD_COMMAND:
+                    handleAddChars(userInputWords);
+                    break;
                 case REMOVE_COMMAND:
-                    handleUpdateChars(userInputWords, command);
+                    handleRemoveChars(userInputWords);
                     break;
                 case RES_COMMAND:
                     handleResUpdate(userInputWords);
@@ -116,7 +121,10 @@ class Shell {
                     if (userInputWords.length == 1){
                         return;
                     }
+                    System.out.println(WRONG_COMMAND_MESSAGE);
                     break;
+                default:
+                    System.out.println(WRONG_COMMAND_MESSAGE);
             }
         }
     }
@@ -127,28 +135,39 @@ class Shell {
      */
     private void handlePrintChars(String[] userInputWords){
         if (checkValidNumberOfArguments(userInputWords, 1)){
-            StringJoiner joiner = new StringJoiner(", ");
+            StringJoiner joiner = new StringJoiner(PRINT_CHARS_DELIMITER);
             availableChars.forEach(item -> joiner.add(item.toString()));
             System.out.println(joiner);
         }
     }
 
     /**
-     * Handles the users request to add/remove chars from the chars available for usage
+     * Handles the users request to add chars to the chars available for usage
      * @param userInputWords the user words which were typed
      */
-    private void handleUpdateChars(String[] userInputWords, String command) {
+    private void handleAddChars(String[] userInputWords) {
         if (checkValidNumberOfArguments(userInputWords, 2)){
             char[] charRange = getCharRange(userInputWords[1]);
             if (charRange.length == 0){
-                System.out.println(WRONG_COMMAND_MESSAGE);
+                System.out.println(BAD_ADD_MESSAGE);
+                return;
             }
-            if (command.equals(ADD_COMMAND)){
-                addCharsByRange(charRange);
+            addCharsByRange(charRange);
+        }
+    }
+
+    /**
+     * Handles the users request to remove chars from the chars available for usage
+     * @param userInputWords the user words which were typed
+     */
+    private void handleRemoveChars(String[] userInputWords) {
+        if (checkValidNumberOfArguments(userInputWords, 2)){
+            char[] charRange = getCharRange(userInputWords[1]);
+            if (charRange.length == 0){
+                System.out.println(BAD_REMOVE_MESSAGE);
+                return;
             }
-            else{
-                removeCharsByRange(charRange);
-            }
+            removeCharsByRange(charRange);
         }
     }
 
