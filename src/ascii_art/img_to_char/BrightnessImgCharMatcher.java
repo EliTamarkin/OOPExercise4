@@ -44,14 +44,11 @@ public class BrightnessImgCharMatcher {
         int numCharsInCol = image.getHeight() / subImageSize;
         SubImages subImages = image.getSubImages(subImageSize);
         char[][] fittedChars = new char[numCharsInCol][numCharsInRow];
-        int i = 0, j = 0;
+        int i = 0;
         for(Color[][] subImage : subImages){
-            fittedChars[i][j] = getCharacterForSubImage(subImage, charSet);
-            j++;
-            if (j == numCharsInRow) {
-                j = 0;
-                i++;
-            }
+            fittedChars[i / numCharsInRow][i % numCharsInRow] =
+                    getCharacterForSubImage(subImage, charSet);
+            i++;
         }
         return fittedChars;
     }

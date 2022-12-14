@@ -1,2 +1,52 @@
 eliyahut
 208672964
+
+=============================
+=      File description     =
+=============================
+BrightnessImgCharMatcher.java - Contains the matcher which converts the images into a 2d array of chars.
+CharRenderer.java - Renders each character to a 2d array of booleans representing the char
+Driver.java - Main method to run the code.
+Shell.java - Controls the shell commands given to print, add and remove characters for the characters
+used to render the picture as well as render format and render resolution of the picture.
+FileImage.java - Controls the FileImage instance which is the object used to for splitting into
+sub images.
+Image.java - Image interface describing the commands used on Image instances.
+SubImages.java - SubImages class which provides an iterator over the sub images of the given picture.
+
+=============================
+=          Design           =
+=============================
+In the following exercise, the additional implementation which was added is the additional SubImages
+class. The following class holds a property which is a collection of the sub images of a given picture.
+It provides an iterator over the subImages so they can be iterated in a convenient way.
+In order to use the given class, an additional method was added to the Image interface which returns
+a new instance of the SubImages class containing the collection of the sub images.
+
+=============================
+=  Implementation details   =
+=============================
+In the FileImage class, the method used for splitting the image into different sub images works in the
+following way:
+It treats each image as a grid of different sub images, creating each row in the grid and in each
+row, creating each sub image.
+
+=============================
+=    Answers to questions   =
+=============================
+1) Described above
+2) Run Time:
+Denote the number of pixels in the given picture by n.
+Notice that the number of pixels in the FileImage generated (meaning generating the image that it's
+height and width are the closest power of two values to our dimensions) is O(n).
+meaning, generating the FileImage instance takes O(n) as well.
+Furthermore, since generating all the sub images of the given image requires a single run on it,
+the process takes O(n) as well.
+Now, notice that the amount of sub images is O(n) since every sub image can be a single pixel of the
+given image.
+In order to save the brightness of each char used, I have used the Map collection which maps
+from a character to a float value representing it's brightness value.
+Notice that using the map we can easily access values of previous characters used for the given image,
+concluding that calculating the brightness for each char is O(1) and the total runtime is O(n).
+3) Explained in Design section.
+4) Explained in Design section.
