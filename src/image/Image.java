@@ -13,6 +13,12 @@ public interface Image{
     Color getPixel(int x, int y);
     int getWidth();
     int getHeight();
+
+    /**
+     * default method for sub images getter
+     * @param subImageSize size of each sub image
+     * @return SubImages instance with an empty sub images collection
+     */
     default SubImages getSubImages(int subImageSize) {
         ArrayList<Color[][]> innerList = new ArrayList<>();
         ArrayList<ArrayList<Color[][]>> outerList = new ArrayList<>();

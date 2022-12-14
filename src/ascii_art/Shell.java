@@ -138,7 +138,9 @@ class Shell {
             StringJoiner joiner = new StringJoiner(PRINT_CHARS_DELIMITER);
             availableChars.forEach(item -> joiner.add(item.toString()));
             System.out.println(joiner);
+            return;
         }
+        System.out.println(WRONG_COMMAND_MESSAGE);
     }
 
     /**
@@ -153,7 +155,9 @@ class Shell {
                 return;
             }
             addCharsByRange(charRange);
+            return;
         }
+        System.out.println(BAD_ADD_MESSAGE);
     }
 
     /**
@@ -169,6 +173,7 @@ class Shell {
             }
             removeCharsByRange(charRange);
         }
+        System.out.println(BAD_REMOVE_MESSAGE);
     }
 
     /**
@@ -190,7 +195,9 @@ class Shell {
                 return;
             }
             handleNewResolutionValue(newResolution);
+            return;
         }
+        System.out.println(WRONG_COMMAND_MESSAGE);
     }
 
     /**
@@ -200,7 +207,9 @@ class Shell {
     private void handleConsoleCommand(String[] userInputWords, String command){
         if (checkValidNumberOfArguments(userInputWords, 1)){
             this.outputTo = command;
+            return;
         }
+        System.out.println(WRONG_COMMAND_MESSAGE);
     }
 
     /**
@@ -219,7 +228,9 @@ class Shell {
             else {
                 consoleOutput.output(selectedChars);
             }
+            return;
         }
+        System.out.println(WRONG_COMMAND_MESSAGE);
     }
 
     /**
@@ -229,11 +240,7 @@ class Shell {
      * @return true whether the amount fits the proper amount for the command and false otherwise
      */
     private boolean checkValidNumberOfArguments(String[] userInputWords, int numValidArguments){
-        if (userInputWords.length != numValidArguments){
-            System.out.println(WRONG_COMMAND_MESSAGE);
-            return false;
-        }
-        return true;
+        return userInputWords.length == numValidArguments;
     }
 
     /**

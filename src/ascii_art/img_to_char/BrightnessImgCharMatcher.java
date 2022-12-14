@@ -13,22 +13,29 @@ public class BrightnessImgCharMatcher {
     private static final double RED_FOR_GREY_FACTOR = 0.2126;
     private static final double GREEN_FOR_GREY_FACTOR = 0.7152;
     private static final double BLUE_FOR_GREY_FACTOR = 0.0722;
-    private static final String ERROR_BAD_IMAGE = "ERROR: BAD iMAGE";
 
     private final Image image;
     private final String fontName;
 
     private final HashMap<Character, Float> characterBrightnessValues;
 
+    /**
+     * Constructs a new BrightnessImgCharMatcher instance
+     * @param image to create an instance for
+     * @param fontName font to be used for rendering
+     */
     public BrightnessImgCharMatcher(Image image, String fontName){
         this.image = image;
-        if (image == null){
-            System.out.println(ERROR_BAD_IMAGE);
-        }
         this.fontName = fontName;
         this.characterBrightnessValues = new HashMap<>();
     }
 
+    /**
+     * Constructs a new ascii art matrix
+     * @param numCharsInRow number of characters in the ascii image created
+     * @param charSet chars to be used for the construction
+     * @return the provided image in characters
+     */
     public char[][] chooseChars(int numCharsInRow, Character[] charSet){
         for(char character : charSet){
             calculateSingleCharBrightness(character);
@@ -39,7 +46,7 @@ public class BrightnessImgCharMatcher {
         char[][] fittedChars = new char[numCharsInCol][numCharsInRow];
         int i = 0, j = 0;
         for(Color[][] subImage : subImages){
-            fittedChars[i][j] = getCharacterForSubImage(subImage);
+            fittedChars[i][j] = getCharacterForSubImage(subImage, charSet);
             j++;
             if (j == numCharsInRow) {
                 j = 0;
@@ -49,6 +56,11 @@ public class BrightnessImgCharMatcher {
         return fittedChars;
     }
 
+
+    /**
+     * Calculates the brightness value for a single character
+     * @param charToCheck character to be used for brightness calculation
+     */
     private void calculateSingleCharBrightness(char charToCheck){
         if (characterBrightnessValues.containsKey(charToCheck)){
             return;
@@ -59,6 +71,11 @@ public class BrightnessImgCharMatcher {
         characterBrightnessValues.put(charToCheck, charBrightness);
     }
 
+    /**
+     * Returns the number of white pixels in the given array
+     * @param brightnessArray a boolean array representing a character
+     * @return the number of white (true) pixels in the given array
+     */
     private int getNumberOfWhitePixels(boolean [][] brightnessArray){
         int counter = 0;
         for (boolean[] booleans : brightnessArray) {
@@ -71,12 +88,14 @@ public class BrightnessImgCharMatcher {
         return counter;
     }
 
-    private float linearStretchCharBrightness(char key, float minValue, float maxValue){
-        float currentValue = characterBrightnessValues.get(key);
-        return (currentValue - minValue) / (maxValue - minValue);
-    }
-
-    private Character getCharacterForSubImage(Color[][] subImage){
+    /**
+     * Returns the most fitted character for the given sub image using characters from the given
+     * char set
+     * @param subImage to be fit
+     * @param charSet to be used
+     * @return the most fitted character
+     */
+    private Character getCharacterForSubImage(Color[][] subImage, Character[] charSet){
         float greyValuesAverage = 0;
         for (Color[] rowColors : subImage) {
             for (Color color : rowColors) {
@@ -86,15 +105,22 @@ public class BrightnessImgCharMatcher {
             }
         }
         greyValuesAverage = greyValuesAverage / (MAX_RGB * subImage.length * subImage[0].length);
-        return getMostFittedCharacter(greyValuesAverage);
+        return getMostFittedCharacter(greyValuesAverage, charSet);
     }
 
-    private char getMostFittedCharacter(float valueToFit){
+    /**
+     * Returns the char representing the value closest to the provided value
+     * after linear normalizing each char value
+     * @param valueToFit value
+     * @param charSet to be used
+     * @return the best character
+     */
+    private char getMostFittedCharacter(float valueToFit, Character[] charSet){
         float minValue = Collections.min(characterBrightnessValues.values());
         float maxValue = Collections.max(characterBrightnessValues.values());
         float smallestDifference = Float.POSITIVE_INFINITY;
         char mostFittedChar = 0;
-        for (char key : characterBrightnessValues.keySet()){
+        for (char key : charSet){
             float linearStretchedValue = linearStretchCharBrightness(key, minValue, maxValue);
             float currentDifference = Math.abs(linearStretchedValue - valueToFit);
             if (currentDifference < smallestDifference){
@@ -105,12 +131,19 @@ public class BrightnessImgCharMatcher {
         return mostFittedChar;
     }
 
-    public static void main(String[] args) {
-        Image img = Image.fromFile("./board.jpeg");
-        BrightnessImgCharMatcher charMatcher = new BrightnessImgCharMatcher(img, "Ariel");
-        var chars = charMatcher.chooseChars(2, new Character[]{'m', 'o'});
-        System.out.println(Arrays.deepToString(chars));
+    /**
+     * Linearly Stretches the value of the given char
+     * @param key that is value needs to be normalized
+     * @param minValue min value to be normalized by
+     * @param maxValue max value to be normalized by
+     * @return normalized value
+     */
+    private float linearStretchCharBrightness(char key, float minValue, float maxValue){
+        float currentValue = characterBrightnessValues.get(key);
+        return (currentValue - minValue) / (maxValue - minValue);
     }
+
+
 
 
 

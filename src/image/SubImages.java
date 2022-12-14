@@ -5,13 +5,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Sub images iterator to be used for iterating over all the sub images
+ */
 public class SubImages implements Iterable<Color[][]>{
-    private final ArrayList<ArrayList<Color[][]>> subImages;
+    private final ArrayList<ArrayList<Color[][]>> subImagesCollection;
 
+    /**
+     * Constructs a new SubImages instance
+     * @param subImages sub images collection to be iterated on
+     */
     public SubImages(ArrayList<ArrayList<Color[][]>> subImages){
-        this.subImages = subImages;
+        this.subImagesCollection = subImages;
     }
 
+    /**
+     * Iterator of the sub images collection
+     * @return Iterator over the sub images collection
+     */
     @Override
     public Iterator<Color[][]> iterator() {
         return new Iterator<>() {
@@ -20,7 +31,7 @@ public class SubImages implements Iterable<Color[][]>{
 
             @Override
             public boolean hasNext() {
-                return row != subImages.size() && col != subImages.get(0).size();
+                return row != subImagesCollection.size() && col != subImagesCollection.get(0).size();
             }
 
             @Override
@@ -28,9 +39,9 @@ public class SubImages implements Iterable<Color[][]>{
                 if (!hasNext()){
                     throw new NoSuchElementException();
                 }
-                Color[][] element = subImages.get(row).get(col);
+                Color[][] element = subImagesCollection.get(row).get(col);
                 col++;
-                if(col >= subImages.get(0).size()){
+                if(col >= subImagesCollection.get(0).size()){
                     row++;
                     col = 0;
                 }
