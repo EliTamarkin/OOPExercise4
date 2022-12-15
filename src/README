@@ -22,6 +22,7 @@ class. The following class holds a property which is a collection of the sub ima
 It provides an iterator over the subImages so they can be iterated in a convenient way.
 In order to use the given class, an additional method was added to the Image interface which returns
 a new instance of the SubImages class containing the collection of the sub images.
+The default method returns an iterator over an empty SubImages object.
 
 =============================
 =  Implementation details   =
@@ -35,7 +36,7 @@ row, creating each sub image.
 =    Answers to questions   =
 =============================
 1) Described above
-2) Run Time:
+2) Time Complexity:
 Denote the number of pixels in the given picture by n.
 Notice that the number of pixels in the FileImage generated (meaning generating the image that it's
 height and width are the closest power of two values to our dimensions) is O(n).
@@ -44,9 +45,25 @@ Furthermore, since generating all the sub images of the given image requires a s
 the process takes O(n) as well.
 Now, notice that the amount of sub images is O(n) since every sub image can be a single pixel of the
 given image.
+Time complexity of the first run:
+First, notice that there is a constant amount of characters (since we at most take all of the characters
+which is a bounded amount). Then, notice that calculating the brightness of each character takes a
+constant time as well. Afterwards, we calculate the most fitting character for each sub image, iterating
+through all of the sub images and obtaining the most fitting character for it. Notice that finding the
+best character is done by iterating all of the characters making O(1) actions for each.
+So obtaining the chars is done by O(n) and the total run time is O(n) as well.
+Time complexity of the second run:
 In order to save the brightness of each char used, I have used the Map collection which maps
 from a character to a float value representing it's brightness value.
 Notice that using the map we can easily access values of previous characters used for the given image,
-concluding that calculating the brightness for each char is O(1) and the total runtime is O(n).
+saving the time calculating the brightness again. The process afterwards is the same so the total run
+time is O(n) as well.
+Space complexity:
+Denote the number of pixels in the given picture by n.
+Notice that saving the picture then takes O(n) space and saving the "normalized" picture (the picture
+that it's height and width are powers of 2) takes O(n) as well.
+In addition, space O(n) space was used for saving the SubImages and a constant amount of space was used
+for storing the hashmap mapping characters to their value. Therefore, making the space Complexity O(n)
+as well.
 3) Explained in Design section.
 4) Explained in Design section.
