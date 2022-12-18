@@ -5,6 +5,8 @@ import image.SubImages;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BrightnessImgCharMatcher {
 
@@ -44,10 +46,13 @@ public class BrightnessImgCharMatcher {
         int numCharsInCol = image.getHeight() / subImageSize;
         SubImages subImages = image.getSubImages(subImageSize);
         char[][] fittedChars = new char[numCharsInCol][numCharsInRow];
+        Map<Character, Float> currentCharsMap = getCurrentMap(charSet);
+        float currentMinValue = Collections.min(currentCharsMap.values());
+        float currentMaxValue = Collections.max(currentCharsMap.values());
         int i = 0;
         for(Color[][] subImage : subImages){
             fittedChars[i / numCharsInRow][i % numCharsInRow] =
-                    getCharacterForSubImage(subImage, charSet);
+                    getCharacterForSubImage(subImage, charSet, currentMinValue, currentMaxValue);
             i++;
         }
         return fittedChars;
@@ -86,13 +91,26 @@ public class BrightnessImgCharMatcher {
     }
 
     /**
+     * Returns a filtered hashmap
+     * @param charSet that contains all relevant keys for the current set
+     * @return an updated hashmap which contains entries that's keys were requested
+     * for the current image
+     */
+    Map<Character, Float> getCurrentMap(Character[] charSet){
+        List<Character> charList = Arrays.asList(charSet);
+        return characterBrightnessValues.entrySet().stream().filter(x -> charList.contains(x.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
      * Returns the most fitted character for the given sub image using characters from the given
      * char set
      * @param subImage to be fit
      * @param charSet to be used
      * @return the most fitted character
      */
-    private Character getCharacterForSubImage(Color[][] subImage, Character[] charSet){
+    private Character getCharacterForSubImage(Color[][] subImage, Character[] charSet,
+                                              float minValue, float maxValue){
         float greyValuesAverage = 0;
         for (Color[] rowColors : subImage) {
             for (Color color : rowColors) {
@@ -102,7 +120,7 @@ public class BrightnessImgCharMatcher {
             }
         }
         greyValuesAverage = greyValuesAverage / (MAX_RGB * subImage.length * subImage[0].length);
-        return getMostFittedCharacter(greyValuesAverage, charSet);
+        return getMostFittedCharacter(greyValuesAverage, charSet, minValue, maxValue);
     }
 
     /**
@@ -112,9 +130,8 @@ public class BrightnessImgCharMatcher {
      * @param charSet to be used
      * @return the best character
      */
-    private char getMostFittedCharacter(float valueToFit, Character[] charSet){
-        float minValue = Collections.min(characterBrightnessValues.values());
-        float maxValue = Collections.max(characterBrightnessValues.values());
+    private char getMostFittedCharacter(float valueToFit, Character[] charSet,
+                                        float minValue, float maxValue){
         float smallestDifference = Float.POSITIVE_INFINITY;
         char mostFittedChar = 0;
         for (char key : charSet){

@@ -47,7 +47,9 @@ Now, notice that the amount of sub images is O(n) since every sub image can be a
 given image.
 Time complexity of the first run:
 First, notice that there is a constant amount of characters (since we at most take all of the characters
-which is a bounded amount). Then, notice that calculating the brightness of each character takes a
+which is a constant amount), so calculating the map containing only the relevant entries and getting
+their min and max values takes a constant time.
+Then, notice that calculating the brightness of each character takes a
 constant time as well. Afterwards, we calculate the most fitting character for each sub image, iterating
 through all of the sub images and obtaining the most fitting character for it. Notice that finding the
 best character is done by iterating all of the characters making O(1) actions for each.
